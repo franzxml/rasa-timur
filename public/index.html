@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rasa Timur | Peta Kuliner Tradisional Pontianak Timur</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+  >
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H"
+    crossorigin=""
+  >
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"
+    integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV"
+    crossorigin=""
+  >
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"
+    integrity="sha384-wgw+aLYNQ7dlhK47ZPK7FRACiq7ROZwgFNg0m04avm4CaXS+Z9Y7nMu8yNjBKYC+"
+    crossorigin=""
+  >
+  <link rel="stylesheet" href="css/style.css">
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH"
+    crossorigin=""
+    defer
+  ></script>
+  <script
+    src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"
+    integrity="sha384-eXVCORTRlv4FUUgS/xmOyr66XBVraen8ATNLMESp92FKXLAMiKkerixTiBvXriZr"
+    crossorigin=""
+    defer
+  ></script>
+  <script src="js/app.js" defer></script>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Langsung ke peta</a>
+
+  <div class="app-shell" id="app-shell">
+    <header class="topbar">
+      <div class="topbar-meta">
+        <p class="topbar-title">Rasa Timur</p>
+        <span class="topbar-count" id="mobile-count" aria-live="polite">Memuat...</span>
+      </div>
+      <button
+        type="button"
+        id="open-panel-btn"
+        class="btn-secondary topbar-btn"
+        aria-expanded="false"
+        aria-controls="control-panel"
+      >
+        Filter &amp; Legenda
+      </button>
+    </header>
+
+    <div id="panel-backdrop" class="panel-backdrop" hidden></div>
+
+    <aside id="control-panel" class="control-panel" aria-label="Kontrol peta dan legenda">
+      <div class="panel-scroll">
+        <div class="panel-header">
+          <div class="panel-title-wrap">
+            <h1>Rasa Timur</h1>
+            <p class="panel-subtitle">Sebaran warung kuliner tradisional Kecamatan Pontianak Timur</p>
+          </div>
+          <button
+            type="button"
+            id="close-panel-btn"
+            class="btn-secondary panel-close-btn"
+            aria-label="Tutup panel filter dan legenda"
+          >
+            Tutup
+          </button>
+        </div>
+
+        <section class="summary-strip" id="summary-bar" aria-live="polite">
+          <strong id="visible-count" class="summary-count">Memuat data...</strong>
+          <button type="button" id="reset-view-btn" class="btn-secondary">Pusatkan Peta</button>
+        </section>
+
+        <section class="panel-section">
+          <div class="section-head">
+            <h2>Filter Jenis Masakan</h2>
+            <div class="quick-actions">
+              <button type="button" id="select-all-btn" class="btn-ghost">Pilih Semua</button>
+              <button type="button" id="clear-all-btn" class="btn-ghost">Kosongkan</button>
+            </div>
+          </div>
+
+          <fieldset class="filter-fieldset">
+            <legend class="sr-only">Pilih jenis masakan yang ditampilkan</legend>
+            <div class="filter-grid">
+              <label class="filter-option" for="filter-kwetiau">
+                <input type="checkbox" id="filter-kwetiau" data-filter="kwetiau" checked>
+                <span class="filter-label">Kwetiau</span>
+                <span class="filter-count" id="count-kwetiau">...</span>
+              </label>
+
+              <label class="filter-option" for="filter-mi_ayam">
+                <input type="checkbox" id="filter-mi_ayam" data-filter="mi_ayam" checked>
+                <span class="filter-label">Mi Ayam</span>
+                <span class="filter-count" id="count-mi_ayam">...</span>
+              </label>
+
+              <label class="filter-option" for="filter-bubur_pedas">
+                <input type="checkbox" id="filter-bubur_pedas" data-filter="bubur_pedas" checked>
+                <span class="filter-label">Bubur Pedas</span>
+                <span class="filter-count" id="count-bubur_pedas">...</span>
+              </label>
+
+              <label class="filter-option" for="filter-lainnya">
+                <input type="checkbox" id="filter-lainnya" data-filter="lainnya" checked>
+                <span class="filter-label">Lainnya</span>
+                <span class="filter-count" id="count-lainnya">...</span>
+              </label>
+            </div>
+          </fieldset>
+        </section>
+
+        <section class="panel-section">
+          <h2>Mode Penanda</h2>
+          <label class="cluster-toggle" for="toggle-cluster">
+            <input type="checkbox" id="toggle-cluster" checked>
+            <span>Kelompokkan penanda (MarkerCluster)</span>
+          </label>
+          <p id="cluster-mode-note" class="helper-note">
+            Aktif: penanda berdekatan dikelompokkan otomatis dan memakai L.divIcon berwarna harga.
+          </p>
+        </section>
+
+        <section class="panel-section">
+          <h2>Legenda Harga per Porsi</h2>
+          <ul id="price-legend" class="legend-list"></ul>
+        </section>
+
+        <footer class="panel-footer">
+          <p id="data-source-note">Sumber: memeriksa endpoint API...</p>
+          <p>Catatan: nilai halal pada dataset belum diverifikasi secara independen.</p>
+        </footer>
+      </div>
+    </aside>
+
+    <main id="main-content" class="map-stage" tabindex="-1">
+      <button
+        type="button"
+        id="desktop-toggle-btn"
+        class="desktop-toggle-btn"
+        aria-expanded="true"
+        aria-controls="control-panel"
+      >
+        Sembunyikan Panel
+      </button>
+
+      <div
+        id="map"
+        class="map-canvas"
+        role="region"
+        aria-label="Peta sebaran warung kuliner Pontianak Timur"
+      ></div>
+
+      <div id="state-loading" class="state-overlay" role="status" aria-live="polite">
+        <div class="state-card">
+          <p class="state-title">Memuat data warung kuliner Pontianak Timur...</p>
+          <p class="state-desc">Mengambil data titik dan atribut harga untuk ditampilkan di peta.</p>
+        </div>
+      </div>
+
+      <div id="state-empty" class="state-overlay" role="status" aria-live="polite" hidden>
+        <div class="state-card">
+          <p class="state-title">Tidak ada warung yang ditampilkan</p>
+          <p class="state-desc">
+            Semua filter jenis masakan sedang nonaktif. Aktifkan minimal satu kategori untuk melihat titik di peta.
+          </p>
+          <button type="button" id="empty-reset-btn" class="btn-primary">Aktifkan Semua Filter</button>
+        </div>
+      </div>
+
+      <div id="state-error" class="state-overlay" role="alert" hidden>
+        <div class="state-card state-card--error">
+          <p class="state-title">Data warung kuliner gagal dimuat</p>
+          <p id="error-detail" class="state-desc">Terjadi gangguan saat mengambil data GeoJSON.</p>
+          <button type="button" id="retry-load-btn" class="btn-primary">Muat Ulang Data</button>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
